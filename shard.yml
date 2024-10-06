@@ -1,0 +1,22 @@
+name: hisho
+version: 0.1.0
+
+authors:
+  - Lektor <denislour@gmail.com>
+
+targets:
+  hisho:
+    main: src/hisho.cr
+
+crystal: ">= 1.13.2"
+
+dependencies:
+  dotenv:
+    github: gdotdesign/cr-dotenv
+  readline:
+    github: crystal-lang/crystal-readline
+  mocks:
+    github: waterlink/mocks.cr
+    version: ~> 0.9.6
+
+license: MIT

@@ -1,0 +1,23 @@
+# Ignore .env file
+.env
+
+# Ignore Crystal-specific files
+/docs/
+/lib/
+/bin/
+/.shards/
+.dwarf
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+Ignore editor-specific files
+.vscode/
+.idea/
+.swp
+.swo
+
+#Ignore compiled binaries
+/hisho
+Ignore log files
+.log

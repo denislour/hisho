@@ -1,0 +1,3 @@
+require "./hisho"
+
+Hisho.main

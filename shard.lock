@@ -1,0 +1,18 @@
+version: 2.0
+shards:
+  dotenv:
+    git: https://github.com/gdotdesign/cr-dotenv.git
+    version: 1.0.0
+
+  mocks:
+    git: https://github.com/waterlink/mocks.cr.git
+    version: 0.9.6
+
+  readline:
+    git: https://github.com/crystal-lang/crystal-readline.git
+    version: 0.1.1
+
+  singleton:
+    git: https://github.com/waterlink/singleton.cr.git
+    version: 1.0.0
+
