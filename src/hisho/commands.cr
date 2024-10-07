@@ -22,10 +22,10 @@ module Hisho
     end
 
     def chat(input, conversation, last_ai_response)
-      puts "User: #{input}".colorize(:green)
+      puts "Me: #{input}".colorize(:green)
       ai_response = @@chat_client.chat_with_ai(input)
       if ai_response
-        puts "hisho:".colorize(:blue)
+        puts "Hisho:".colorize(:blue)
         puts ai_response
         last_ai_response = ai_response
         conversation << input
@@ -83,11 +83,36 @@ module Hisho
     end
 
     private def add_file_to_context(file_path : String, added_files : Hash(String, String))
-      content = File.read(file_path)
-      added_files[file_path] = content
+      context = File.read(file_path)
+      added_files[file_path] = context
       puts "Added #{file_path} to the chat context.".colorize(:green)
     rescue ex
       puts "Error reading file #{file_path}: #{ex.message}".colorize(:red)
+    end
+
+    def clear(conversation : Array(String), added_files : Hash(String, String), last_ai_response : String)
+      conversation.clear
+      added_files.clear
+      last_ai_response = ""
+      {conversation, added_files, last_ai_response}  # Trả về cả ba giá trị đã được xóa
+    end
+
+    def show_context(conversation : Array(String), added_files : Hash(String, String), output : IO = STDOUT)
+      output.puts "Current conversation context:".colorize(:yellow)
+      conversation.each_with_index do |message, index|
+        role = index.even? ? "User" : "AI"
+        output.puts "#{role}: #{message}"
+      end
+
+      output.puts "\nAdded files:".colorize(:yellow)
+      added_files.each do |file_path, context|
+        output.puts "File: #{file_path}".colorize(:blue)
+        if context.size > 100
+          output.puts "Content preview: #{context[0..100]}..."
+        else
+          output.puts "Content preview: #{context}"
+        end
+      end
     end
   end
 
