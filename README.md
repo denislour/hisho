@@ -2,7 +2,9 @@
 
 [![Crystal Build and Test](https://github.com/denislour/hisho/actions/workflows/crystal.yml/badge.svg)](https://github.com/denislour/hisho/actions/workflows/crystal.yml)
 
-Hisho is a command-line interface (CLI) tool inspired by Aider, designed to interact with AI models from OpenRouter.ai. Built with Crystal, Hisho aims to provide a seamless and efficient way to communicate with various AI models directly from your terminal.
+**Hisho** is a command-line interface (CLI) tool inspired by `Aider`, designed to interact with AI models from `OpenRouter.ai`. Built with Crystal, Hisho aims to provide a seamless and efficient way to communicate with various AI models directly from your terminal.
+
+![Hisho Demo](img/hisho.png)
 
 ## Features
 
@@ -46,7 +48,12 @@ Hisho is a command-line interface (CLI) tool inspired by Aider, designed to inte
 
 ## Configuration
 
-Create a `.env` file in the project root with your OpenRouter.ai API key and preferred model:
+Create a `.env` file in the project root with your `OpenRouter.ai` API key and preferred model:
+
+```
+OPENROUTER_API_KEY=<your-openrouter-api-key>
+MODEL=<your-preferred-model>
+```
 
 ## Usage
 
