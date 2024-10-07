@@ -1,0 +1,28 @@
+name: Crystal Build and Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Crystal
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y crystal
+
+      - name: Install dependencies
+        run: |
+          shards install
+
+      - name: Build the project
+        run: |
+          crystal build src/hisho.cr --release
+
+      - name: Run specs
+        run: |
+          crystal spec
