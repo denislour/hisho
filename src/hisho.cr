@@ -1,4 +1,4 @@
-require "./hisho/*"
+require "./core/*"
 require "dotenv"
 
 Dotenv.load if File.exists?(".env")

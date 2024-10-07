@@ -57,7 +57,7 @@ module Hisho
     def show_context(conversation : Array(String), added_files : Hash(String, String), output : IO = STDOUT)
       output.puts "Current conversation context:".colorize(:yellow)
       conversation.each_with_index do |message, index|
-        role = index.even? ? "User" : "AI"
+        role = index.even? ? "Me" : "Hisho"
         output.puts "#{role}: #{message}"
       end
 
@@ -86,7 +86,7 @@ module Hisho
 
     private def warn_if_large_context(added_files : Hash(String, String), output : IO)
       total_size = added_files.values.sum(&.bytesize)
-      if total_size > 100_000 # Warning if total size exceeds ~100KB
+      if total_size > 100_000
         output.puts "Warning: The total size of added files is large and may affect performance.".colorize(:red)
       end
     end
