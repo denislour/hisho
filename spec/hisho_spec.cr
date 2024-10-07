@@ -12,6 +12,34 @@ describe Hisho::CLI do
     result.should be_true
     output.to_s.should contain("Goodbye!")
   end
+
+  it "should display help message when given the help command" do
+    cli = Hisho::CLI.new
+    input = IO::Memory.new("/help\n/quit\n")
+    output = IO::Memory.new
+
+    cli.run(input: input, output: output)
+    output_string = output.to_s
+    output_string.should contain("Available commands:")
+    output_string.should contain("/add, a: Add files or folders to context")
+    output_string.should contain("/clear: Clear chat context and added files")
+    output_string.should contain("/show_context: Show current conversation and added files")
+    output_string.should contain("/help, h: Show this help message")
+    output_string.should contain("/quit: Exit the program")
+  end
+
+  it "should display greeting message at the start" do
+    cli = Hisho::CLI.new
+    input = IO::Memory.new("/quit\n")
+    output = IO::Memory.new
+
+    cli.run(input: input, output: output)
+    output_string = output.to_s
+    output_string.should contain("Welcome to Hisho!")
+    output_string.should contain("I'm here to assist you with your tasks and answer your questions.")
+    output_string.should contain("Feel free to start chatting or use one of the available commands.")
+    output_string.should contain("Type '/help' or '/h' to see the list of commands.")
+  end
 end
 
 describe Hisho::Commands do
@@ -79,25 +107,26 @@ describe Hisho::Commands do
 
       cleared_conversation.should be_empty
       cleared_added_files.should be_empty
-      cleared_last_ai_response.should be_empty
+      cleared_last_ai_response.should eq("")
       output.to_s.should contain("Chat context and added files have been cleared.")
     end
   end
 
   describe "#show_context" do
     it "displays conversation and added_files" do
-      conversation = ["User: Hello", "AI: Hi there"]
-      added_files = {"test.txt" => "This is a test file content."}
+      conversation = ["Hello", "Hi there"]
+      added_files = {"test.txt" => "This is a test file content that is longer than 100 characters to ensure we see the preview with ellipsis at the end of the content."}
       output = IO::Memory.new
 
       Hisho::Commands.show_context(conversation, added_files, output)
 
       output_string = output.to_s
       output_string.should contain("Current conversation context:")
-      output_string.should contain("User: Hello")
-      output_string.should contain("AI: Hi there")
+      output_string.should contain("Me: Hello")
+      output_string.should contain("Hisho: Hi there")
       output_string.should contain("Added files:")
       output_string.should contain("File: test.txt")
+      output_string.should contain("Content preview: This is a test file content that is longer than 100 characters to ensure we see the preview with elli...")
     end
   end
 end

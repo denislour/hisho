@@ -15,7 +15,7 @@ module Hisho
     end
 
     def run(input : IO = STDIN, output : IO = STDOUT)
-      print_available_commands
+      greetings(output)
 
       loop do
         output.print "Hisho> "
@@ -43,19 +43,30 @@ module Hisho
       when "/show_context"
         Commands.show_context(@conversation, @added_files, output)
         false
+      when "/help", "/h"
+        show_help(output)
+        false
       else
         @conversation, @last_ai_response = Commands.chat(command, @conversation, @last_ai_response, output)
         false
       end
     end
 
-    private def print_available_commands
-      puts "  Just type your message to chat with Hisho".colorize(:green)
-      puts "  Available commands:".colorize(:blue)
-      puts "    /add, a: Add files or folders to context (followed by paths)".colorize(:cyan)
-      puts "    /clear: Clear chat context and added files".colorize(:cyan)
-      puts "    /show_context: Show current conversation and added files".colorize(:cyan)
-      puts "    /quit: Exit the program".colorize(:red)
+    private def show_help(output : IO)
+      output.puts "Available commands:".colorize(:blue)
+      output.puts "  /add, a: Add files or folders to context (followed by paths)".colorize(:cyan)
+      output.puts "  /clear: Clear chat context and added files".colorize(:cyan)
+      output.puts "  /show_context: Show current conversation and added files".colorize(:cyan)
+      output.puts "  /help, h: Show this help message".colorize(:cyan)
+      output.puts "  /quit: Exit the program".colorize(:red)
+    end
+
+    private def greetings(output : IO)
+      output.puts "Welcome to Hisho!".colorize(:green)
+      output.puts "I'm here to assist you with your tasks and answer your questions.".colorize(:green)
+      output.puts "Feel free to start chatting or use one of the available commands.".colorize(:green)
+      output.puts "Type '/help' or '/h' to see the list of commands.".colorize(:green)
+      output.puts
     end
   end
 
