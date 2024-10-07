@@ -1,7 +1,9 @@
 require "./hisho/*"
 require "dotenv"
 
-Dotenv.load
+if File.exists?(".env")
+  Dotenv.load
+end
 
 module Hisho
   VERSION = "0.1.0"
