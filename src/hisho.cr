@@ -1,9 +1,7 @@
 require "./hisho/*"
 require "dotenv"
 
-if File.exists?(".env")
-  Dotenv.load
-end
+Dotenv.load if File.exists?(".env")
 
 module Hisho
   VERSION = "0.1.0"
@@ -22,33 +20,36 @@ module Hisho
       loop do
         output.print "Hisho> "
         command = input.gets.not_nil!.strip
-
-        case command
-        when .starts_with?("/quit"), .starts_with?("/q")
-          output.puts "Goodbye!"
-          return true
-        when .starts_with?("/add"), .starts_with?("/a")
-          paths = command.split[1..]
-          if paths.empty?
-            output.puts "Please provide at least one file or folder path.".colorize(:red)
-          else
-            Commands.add(paths, @added_files)
-          end
-        when .starts_with?("/clear")
-          @conversation.clear
-          @added_files.clear
-          @last_ai_response = ""
-          output.puts "Chat context and added files have been cleared.".colorize(:green)
-        when .starts_with?("/show_context")
-          Commands.show_context(@conversation, @added_files)
-        else
-          @conversation, @last_ai_response = Commands.chat(command, @conversation, @last_ai_response)
-        end
+        return true if handle_command(command, output)
       end
       false
     end
 
-    def print_available_commands
+    private def handle_command(command : String, output : IO) : Bool
+      command_parts = command.split
+      action = command_parts.first?
+      args = command_parts[1..]
+
+      case action
+      when "/quit", "/q"
+        output.puts "Goodbye!"
+        true
+      when "/add", "/a"
+        Commands.add(args, @added_files, output)
+        false
+      when "/clear"
+        Commands.clear(@conversation, @added_files, @last_ai_response, output)
+        false
+      when "/show_context"
+        Commands.show_context(@conversation, @added_files, output)
+        false
+      else
+        @conversation, @last_ai_response = Commands.chat(command, @conversation, @last_ai_response, output)
+        false
+      end
+    end
+
+    private def print_available_commands
       puts "  Just type your message to chat with Hisho".colorize(:green)
       puts "  Available commands:".colorize(:blue)
       puts "    /add, a: Add files or folders to context (followed by paths)".colorize(:cyan)
