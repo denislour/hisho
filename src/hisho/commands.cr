@@ -2,6 +2,7 @@ require "readline"
 require "colorize"
 require "http/client"
 require "json"
+require "file_utils"
 
 module Hisho
   module Commands
@@ -24,7 +25,6 @@ module Hisho
       puts "User: #{input}".colorize(:green)
       ai_response = @@chat_client.chat_with_ai(input)
       if ai_response
-        puts
         puts "hisho:".colorize(:blue)
         puts ai_response
         last_ai_response = ai_response
@@ -59,6 +59,35 @@ module Hisho
     rescue ex
       puts "An error occurred: #{ex.message}".colorize(:red)
       nil
+    end
+
+    def add(paths : Array(String), added_files : Hash(String, String))
+      paths.each do |path|
+        if File.file?(path)
+          add_file_to_context(path, added_files)
+        elsif Dir.exists?(path)
+          Dir.glob("#{path}/**/*").each do |file_path|
+            next if File.directory?(file_path)
+            next if file_path.includes?("__pycache__") || file_path.includes?(".git") || file_path.includes?("node_modules")
+            add_file_to_context(file_path, added_files)
+          end
+        else
+          puts "Error: #{path} is not a file or directory.".colorize(:red)
+        end
+      end
+
+      total_size = added_files.values.sum(&.bytesize)
+      if total_size > 100_000 # Warning if total size exceeds ~100KB
+        puts "Warning: The total size of added files is large and may affect performance.".colorize(:red)
+      end
+    end
+
+    private def add_file_to_context(file_path : String, added_files : Hash(String, String))
+      content = File.read(file_path)
+      added_files[file_path] = content
+      puts "Added #{file_path} to the chat context.".colorize(:green)
+    rescue ex
+      puts "Error reading file #{file_path}: #{ex.message}".colorize(:red)
     end
   end
 

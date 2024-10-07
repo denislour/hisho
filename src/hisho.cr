@@ -15,16 +15,24 @@ module Hisho
     end
 
     def run(input : IO = STDIN, output : IO = STDOUT)
+      print_available_commands
+
       loop do
         output.print "hisho> "
-        command = input.gets
+        command = input.gets.not_nil!.strip
 
-        return true if command.nil?
-        command = command.strip
         case command
-        when "/quit"
-          output.puts "Bye!"
+        when .starts_with?("/quit"), .starts_with?("/q")
+          output.puts "Goodbye!"
           return true
+        when .starts_with?("/add"), .starts_with?("/a")
+          paths = command.split[1..]
+          if paths.empty?
+            output.puts "Please provide at least one file or folder path.".colorize(:red)
+          else
+            Commands.add(paths, @added_files)
+            puts @added_files.inspect
+          end
         else
           @conversation, @last_ai_response = Commands.chat(command, @conversation, @last_ai_response)
         end
@@ -33,9 +41,10 @@ module Hisho
     end
 
     def print_available_commands
-      puts "Available commands:".colorize(:blue)
-      puts "  Just type your message to chat with Hisho"
-      puts "  /quit: Exit the program"
+      puts "  Just type your message to chat with Hisho".colorize(:green)
+      puts "  Available commands:".colorize(:blue)
+      puts "    /add, a: Add files or folders to context (followed by paths)".colorize(:cyan)
+      puts "    /quit: Exit the program".colorize(:red)
     end
   end
 
