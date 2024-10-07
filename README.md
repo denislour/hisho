@@ -1,5 +1,7 @@
 # Hisho
 
+[![Crystal Build and Test](https://github.com/denislour/hisho/actions/workflows/crystal.yml/badge.svg)](https://github.com/denislour/hisho/actions/workflows/crystal.yml)
+
 Hisho is a command-line interface (CLI) tool inspired by Aider, designed to interact with AI models from OpenRouter.ai. Built with Crystal, Hisho aims to provide a seamless and efficient way to communicate with various AI models directly from your terminal.
 
 ## Features
