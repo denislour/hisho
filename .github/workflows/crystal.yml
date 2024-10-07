@@ -25,5 +25,8 @@ jobs:
           crystal build src/hisho.cr --release
 
       - name: Run specs
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          MODEL: "liquid/lfm-40b:free"
         run: |
           crystal spec
