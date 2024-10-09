@@ -11,21 +11,22 @@ module Hisho
       @conversation = [] of String
       @added_files = {} of String => String
       @last_ai_response = ""
+      @runable = true
       Commands.setup(ENV["OPENROUTER_API_KEY"], ENV["MODEL"])
     end
 
-    def run(input : IO = STDIN, output : IO = STDOUT)
+    def run(input : IO = STDIN, output : IO = STDOUT) : Bool
       greetings(output)
 
-      loop do
+      while @runable
         output.print "Hisho> "
         command = input.gets.not_nil!.strip
-        return true if handle_command(command, output)
+        handle_command(command, output)
       end
-      false
+      true
     end
 
-    private def handle_command(command : String, output : IO) : Bool
+    private def handle_command(command : String, output : IO) : Nil
       command_parts = command.split
       action = command_parts.first?
       args = command_parts[1..]
@@ -33,26 +34,21 @@ module Hisho
       case action
       when "/quit", "/q"
         output.puts "Goodbye!"
-        true
+        @runable = false
       when "/add", "/a"
         Commands.add(args, @added_files, output)
-        false
       when "/clear"
-        Commands.clear(@conversation, @added_files, @last_ai_response, output)
-        false
+        @conversation, @added_files, @last_ai_response = Commands.clear(@conversation, @added_files, @last_ai_response, output)
       when "/show_context"
         Commands.show_context(@conversation, @added_files, output)
-        false
       when "/help", "/h"
         show_help(output)
-        false
       else
         @conversation, @last_ai_response = Commands.chat(command, @conversation, @last_ai_response, output)
-        false
       end
     end
 
-    private def show_help(output : IO)
+    private def show_help(output : IO) : Nil
       output.puts "Available commands:".colorize(:blue)
       output.puts "  /add, a: Add files or folders to context (followed by paths)".colorize(:cyan)
       output.puts "  /clear: Clear chat context and added files".colorize(:cyan)
@@ -61,7 +57,7 @@ module Hisho
       output.puts "  /quit: Exit the program".colorize(:red)
     end
 
-    private def greetings(output : IO)
+    private def greetings(output : IO) : Nil
       output.puts "Welcome to Hisho!".colorize(:green)
       output.puts "I'm here to assist you with your tasks and answer your questions.".colorize(:green)
       output.puts "Feel free to start chatting or use one of the available commands.".colorize(:green)
@@ -70,7 +66,7 @@ module Hisho
     end
   end
 
-  def self.main
-    exit if CLI.new.run
+  def self.main : Nil
+    exit unless CLI.new.run
   end
 end
