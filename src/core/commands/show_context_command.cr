@@ -14,14 +14,14 @@ module Hisho
     end
 
     private def build_context_message(conversation : Conversation, file : File) : String
-      message = "Current conversation context:\n"
-      conversation.get_conversation.each do |msg|
-        message += "#{msg}\n"
-      end
-      message += "\nAdded files:\n"
-      file.get_added_files.each do |file_path, content|
-        message += "File: #{file_path}\n"
-        message += "Content preview: #{content[0..100]}...\n" if content.size > 100
+      message = String.build do |str|
+        str << "Current conversation context:\n"
+        conversation.get_conversation.each { |msg| str << "#{msg}\n" }
+        str << "\nAdded files:\n"
+        file.get_added_files.each do |file_path, content|
+          str << "File: #{file_path}\n"
+          str << "Content preview: #{content[0..100]}...\n" if content.size > 100
+        end
       end
       message
     end

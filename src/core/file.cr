@@ -11,22 +11,13 @@ module Hisho
     end
 
     def add_path(path : String) : Symbol
-      if ::File.file?(path)
-        add_file(path, ::File.read(path))
-        :info
-      elsif Dir.exists?(path)
-        add_directory(path)
-        :info
-      else
-        :error
-      end
+      return :error unless ::File.file?(path) || Dir.exists?(path)
+      ::File.file?(path) ? add_file(path, ::File.read(path)) : add_directory(path)
+      :info
     end
 
     def add_directory(dir_path : String)
-      Dir.glob("#{dir_path}/**/*").each do |file_path|
-        next if should_skip?(file_path)
-        add_file(file_path, ::File.read(file_path))
-      end
+        Dir.glob("#{dir_path}/**/*").reject { |f| should_skip?(f) }.each { |f| add_file(f, ::File.read(f)) }
     end
 
     def remove(path : String)

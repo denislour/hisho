@@ -6,12 +6,7 @@ module Hisho
 
     def execute(conversation : Conversation, chat_client : ChatClient, file : File) : Command
       @paths.each do |path|
-        result = file.add_path(path)
-        if result == :error
-          @type = :error
-          @message = "Error: #{path} is not a file or directory."
-          return self
-        end
+        return self if file.add_path(path) == :error
       end
       @message = "Added files: #{@paths.join(", ")}"
       self
