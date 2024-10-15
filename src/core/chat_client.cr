@@ -23,14 +23,21 @@ module Hisho
 
       response = HTTP::Client.post("https://openrouter.ai/api/v1/chat/completions", headers: headers, body: body)
 
+      handle_response(response)
+    rescue ex : Exception
+      handle_error(ex)
+    end
+
+    private def handle_response(response : HTTP::Client::Response) : String?
       if response.success?
         result = JSON.parse(response.body)
-        return result["choices"][0]["message"]["content"].as_s
+        result["choices"][0]["message"]["content"].as_s
       else
-        puts "Error while communicating with OpenRouter: #{response.status_code}".colorize(:red)
-        return nil
+        raise "Error while communicating with OpenRouter: #{response.status_code}"
       end
-    rescue ex
+    end
+
+    private def handle_error(ex : Exception) : String?
       puts "An error occurred: #{ex.message}".colorize(:red)
       nil
     end

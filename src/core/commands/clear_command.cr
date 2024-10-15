@@ -9,5 +9,9 @@ module Hisho
       file.clear
       self
     end
+
+    def display
+      puts @message.colorize(:green)
+    end
   end
 end

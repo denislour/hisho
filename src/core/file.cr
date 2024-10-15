@@ -10,8 +10,7 @@ module Hisho
 
     def add_directory(dir_path : String)
       Dir.glob("#{dir_path}/**/*").each do |file_path|
-        next if ::File.directory?(file_path)
-        next if file_path.includes?("__pycache__") || file_path.includes?(".git") || file_path.includes?("node_modules")
+        next if should_skip?(file_path)
         add(file_path, ::File.read(file_path))
       end
     end
@@ -34,6 +33,13 @@ module Hisho
 
     def get_added_files
       @added_files
+    end
+
+    private def should_skip?(file_path : String) : Bool
+      ::File.directory?(file_path) ||
+      file_path.includes?("__pycache__") ||
+      file_path.includes?(".git") ||
+      file_path.includes?("node_modules")
     end
   end
 end

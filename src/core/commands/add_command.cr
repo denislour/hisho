@@ -22,5 +22,13 @@ module Hisho
       @message = "Added files: #{added_files.join(", ")}"
       self
     end
+
+    def display
+      if @type == :error
+        puts @message.colorize(:red)
+      else
+        puts @message.colorize(:green)
+      end
+    end
   end
 end

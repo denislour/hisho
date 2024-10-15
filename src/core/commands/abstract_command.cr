@@ -7,5 +7,6 @@ module Hisho
     end
 
     abstract def execute(conversation : Conversation, chat_client : ChatClient, file : File) : Command
+    abstract def display
   end
 end

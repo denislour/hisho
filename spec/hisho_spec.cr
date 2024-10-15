@@ -17,27 +17,21 @@ describe Hisho::CLI do
   end
 end
 
-describe Hisho::CommandProcessor do
-  it "should return quit result when given quit command" do
-    processor = Hisho::CommandProcessor.new
-    conversation = Hisho::Conversation.new
-    chat_client = MockChatClient.new("Test response")
-    file = Hisho::File.new
-    command = Hisho::CommandBuilder.build("/quit")
+describe Hisho::Command do
+  conversation = Hisho::Conversation.new
+  chat_client = MockChatClient.new("Test response")
+  file = Hisho::File.new
 
-    result = processor.execute(command, conversation, chat_client, file)
+  it "should return quit result when given quit command" do
+    command = Hisho::CommandBuilder.build("/quit")
+    result = command.execute(conversation, chat_client, file)
     result.type.should eq(:quit)
     result.message.should eq("Goodbye!")
   end
 
   it "should display help message when given the help command" do
-    processor = Hisho::CommandProcessor.new
-    conversation = Hisho::Conversation.new
-    chat_client = MockChatClient.new("Test response")
-    file = Hisho::File.new
     command = Hisho::CommandBuilder.build("/help")
-
-    result = processor.execute(command, conversation, chat_client, file)
+    result = command.execute(conversation, chat_client, file)
     result.type.should eq(:info)
     result.message.should contain("Available commands:")
     result.message.should contain("/add, /a [path]: Add files or folders to context")
@@ -48,39 +42,24 @@ describe Hisho::CommandProcessor do
   end
 
   it "should return chat result when given a non-command input" do
-    processor = Hisho::CommandProcessor.new
-    conversation = Hisho::Conversation.new
-    chat_client = MockChatClient.new("AI response")
-    file = Hisho::File.new
     command = Hisho::CommandBuilder.build("Hello, AI")
-
-    result = processor.execute(command, conversation, chat_client, file)
+    result = command.execute(conversation, chat_client, file)
     result.type.should eq(:chat)
-    result.message.should eq("AI response")
+    result.message.should eq("Test response")
   end
 
   it "should return info result when given clear command" do
-    processor = Hisho::CommandProcessor.new
-    conversation = Hisho::Conversation.new
-    chat_client = MockChatClient.new("Test response")
-    file = Hisho::File.new
     command = Hisho::CommandBuilder.build("/clear")
-
-    result = processor.execute(command, conversation, chat_client, file)
+    result = command.execute(conversation, chat_client, file)
     result.type.should eq(:info)
     result.message.should contain("Chat context and added files have been cleared.")
   end
 
   it "should return info result when given show_context command" do
-    processor = Hisho::CommandProcessor.new
-    conversation = Hisho::Conversation.new
-    chat_client = MockChatClient.new("Test response")
-    file = Hisho::File.new
     conversation.add_user_message("Test message")
     conversation.add_ai_response("Test response")
     command = Hisho::CommandBuilder.build("/show_context")
-
-    result = processor.execute(command, conversation, chat_client, file)
+    result = command.execute(conversation, chat_client, file)
     result.type.should eq(:info)
     result.message.should contain("Current conversation context:")
     result.message.should contain("User: Test message")
@@ -94,10 +73,10 @@ describe Hisho::Conversation do
     conversation.add_user_message("Hello")
     conversation.add_ai_response("Hi there")
 
-    conversation = conversation.get_conversation
-    conversation.size.should eq(2)
-    conversation[0].should eq("User: Hello")
-    conversation[1].should eq("AI: Hi there")
+    conversation_history = conversation.get_conversation
+    conversation_history.size.should eq(2)
+    conversation_history[0].should eq("User: Hello")
+    conversation_history[1].should eq("AI: Hi there")
   end
 
   it "should clear conversation" do
@@ -107,8 +86,8 @@ describe Hisho::Conversation do
 
     conversation.clear
 
-    conversation = conversation.get_conversation
-    conversation.should be_empty
+    conversation_history = conversation.get_conversation
+    conversation_history.should be_empty
   end
 end
 

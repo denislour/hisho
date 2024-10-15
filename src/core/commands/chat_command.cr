@@ -16,5 +16,9 @@ module Hisho
       end
       self
     end
+
+    def display
+      puts "Hisho: #{@message}".colorize(:blue)
+    end
   end
 end

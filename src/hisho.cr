@@ -1,6 +1,5 @@
 require "./core/chat_client"
 require "./core/conversation"
-require "./core/command_processor"
 require "./core/command_builder"
 require "./core/file"
 require "dotenv"
@@ -15,7 +14,6 @@ module Hisho
     def initialize
       @conversation = Conversation.new
       @file = File.new
-      @command_processor = CommandProcessor.new
       @chat_client = DefaultChatClient.new(ENV["OPENROUTER_API_KEY"], ENV["MODEL"])
       @runable = true
     end
@@ -25,10 +23,13 @@ module Hisho
 
       while @runable
         output.print "Hisho> "
-        command_input = input.gets.not_nil!.strip
-        command = CommandBuilder.build(command_input)
-        command_result = @command_processor.execute(command, @conversation, @chat_client, @file)
-        if command_result.type == :quit
+        command_input = input.gets
+        break unless command_input # Xử lý trường hợp input là nil
+
+        command = CommandBuilder.build(command_input.strip)
+        result = command.execute(@conversation, @chat_client, @file)
+        result.display
+        if result.type == :quit
           @runable = false
         end
       end

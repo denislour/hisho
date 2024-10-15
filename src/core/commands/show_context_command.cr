@@ -15,5 +15,9 @@ module Hisho
       @message = result
       self
     end
+
+    def display
+      puts @message.colorize(:cyan)
+    end
   end
 end
