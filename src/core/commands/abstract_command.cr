@@ -6,6 +6,6 @@ module Hisho
     def initialize(@type : Symbol, @message : String)
     end
 
-    abstract def execute(conversation_manager : ConversationManager, chat_client : ChatClient) : Command
+    abstract def execute(conversation : Conversation, chat_client : ChatClient, file : File) : Command
   end
 end

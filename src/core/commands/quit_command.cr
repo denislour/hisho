@@ -4,7 +4,7 @@ module Hisho
       super(:quit, "Goodbye!")
     end
 
-    def execute(conversation_manager : ConversationManager, chat_client : ChatClient) : Command
+    def execute(conversation : Conversation, chat_client : ChatClient, file : File) : Command
       self
     end
   end

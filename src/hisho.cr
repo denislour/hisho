@@ -1,7 +1,8 @@
 require "./core/chat_client"
-require "./core/conversation_manager"
+require "./core/conversation"
 require "./core/command_processor"
 require "./core/command_builder"
+require "./core/file"
 require "dotenv"
 require "colorize"
 
@@ -12,7 +13,8 @@ module Hisho
 
   class CLI
     def initialize
-      @conversation_manager = ConversationManager.new
+      @conversation = Conversation.new
+      @file = File.new
       @command_processor = CommandProcessor.new
       @chat_client = DefaultChatClient.new(ENV["OPENROUTER_API_KEY"], ENV["MODEL"])
       @runable = true
@@ -25,7 +27,7 @@ module Hisho
         output.print "Hisho> "
         command_input = input.gets.not_nil!.strip
         command = CommandBuilder.build(command_input)
-        command_result = @command_processor.execute(command, @conversation_manager, @chat_client)
+        command_result = @command_processor.execute(command, @conversation, @chat_client, @file)
         if command_result.type == :quit
           @runable = false
         end

@@ -4,11 +4,11 @@ module Hisho
       super(:chat, "")
     end
 
-    def execute(conversation_manager : ConversationManager, chat_client : ChatClient) : Command
-      conversation_manager.add_user_message(@input)
+    def execute(conversation : Conversation, chat_client : ChatClient, file : File) : Command
+      conversation.add_user_message(@input)
       response = chat_client.send_message_to_ai(@input)
       if response
-        conversation_manager.add_ai_response(response)
+        conversation.add_ai_response(response)
         @message = response
       else
         @type = :error

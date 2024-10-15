@@ -12,8 +12,8 @@ module Hisho
       :quit => ->(message : String) { puts message.colorize(:yellow) }
     }
 
-    def execute(command : Command, conversation_manager : ConversationManager, chat_client : ChatClient)
-      result = command.execute(conversation_manager, chat_client)
+    def execute(command : Command, conversation : Conversation, chat_client : ChatClient, file : File)
+      result = command.execute(conversation, chat_client, file)
       display_result(result)
       result
     end

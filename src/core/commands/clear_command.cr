@@ -4,8 +4,9 @@ module Hisho
       super(:info, "Chat context and added files have been cleared.")
     end
 
-    def execute(conversation_manager : ConversationManager, chat_client : ChatClient) : Command
-      conversation_manager.clear
+    def execute(conversation : Conversation, chat_client : ChatClient, file : File) : Command
+      conversation.clear
+      file.clear
       self
     end
   end

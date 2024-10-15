@@ -1,8 +1,7 @@
 module Hisho
-  class ConversationManager
+  class Conversation
     def initialize
       @conversation = [] of String
-      @added_files = {} of String => String
     end
 
     def add_user_message(message : String)
@@ -15,15 +14,14 @@ module Hisho
 
     def clear
       @conversation.clear
-      @added_files.clear
     end
 
-    def add_file(path : String, content : String)
-      @added_files[path] = content
+    def get_conversation
+      @conversation
     end
 
-    def get_context
-      {conversation: @conversation, added_files: @added_files}
+    def to_s : String
+      @conversation.join("\n")
     end
   end
 end
