@@ -7,33 +7,37 @@ module Hisho
   end
 
   class DefaultChatClient < ChatClient
+    API_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
+
     def initialize(@api_key : String, @model : String)
     end
 
     def send_message_to_ai(user_message : String) : String?
-      headers = HTTP::Headers{
-        "Content-Type" => "application/json",
-        "Authorization" => "Bearer #{@api_key}"
-      }
-
-      body = {
-        "model" => @model,
-        "messages" => [{"role" => "user", "content" => user_message}]
-      }.to_json
-
-      response = HTTP::Client.post("https://openrouter.ai/api/v1/chat/completions", headers: headers, body: body)
-
+      response = make_api_request(user_message)
       handle_response(response)
     rescue ex : Exception
       handle_error(ex)
     end
 
+    private def make_api_request(user_message : String) : HTTP::Client::Response
+      headers = HTTP::Headers{
+        "Content-Type"  => "application/json",
+        "Authorization" => "Bearer #{@api_key}"
+      }
+
+      body = {
+        "model"    => @model,
+        "messages" => [{"role" => "user", "content" => user_message}]
+      }.to_json
+
+      HTTP::Client.post(API_ENDPOINT, headers: headers, body: body)
+    end
+
     private def handle_response(response : HTTP::Client::Response) : String?
       if response.success?
-        result = JSON.parse(response.body)
-        result["choices"][0]["message"]["content"].as_s
+        JSON.parse(response.body)["choices"][0]["message"]["content"].as_s
       else
-        raise "Error while communicating with OpenRouter: #{response.status_code}"
+        raise "Error communicating with OpenRouter: #{response.status_code}"
       end
     end
 

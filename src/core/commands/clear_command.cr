@@ -1,7 +1,7 @@
 module Hisho
   class ClearCommand < Command
     def initialize
-      super(:info, "Chat context and added files have been cleared.")
+      super(:info, "Cleared conversation and file context.")
     end
 
     def execute(conversation : Conversation, chat_client : ChatClient, file : File) : Command

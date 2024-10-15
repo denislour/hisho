@@ -21,11 +21,7 @@ module Hisho
       command = parts.first.try(&.downcase.gsub("/", ""))
       args = parts[1..]
 
-      if command && @@command_map.has_key?(command)
-        @@command_map[command].call(args)
-      else
-        ChatCommand.new(input)
-      end
+      @@command_map[command]?.try(&.call(args)) || ChatCommand.new(input)
     end
   end
 end

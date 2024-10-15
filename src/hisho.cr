@@ -15,33 +15,40 @@ module Hisho
       @conversation = Conversation.new
       @file = File.new
       @chat_client = DefaultChatClient.new(ENV["OPENROUTER_API_KEY"], ENV["MODEL"])
-      @runable = true
+      @running = true
     end
 
     def run(input : IO = STDIN, output : IO = STDOUT) : Bool
-      greetings(output)
-
-      while @runable
-        output.print "Hisho> "
-        command_input = input.gets
-        break unless command_input # Xử lý trường hợp input là nil
-
-        command = CommandBuilder.build(command_input.strip)
-        result = command.execute(@conversation, @chat_client, @file)
-        result.display
-        if result.type == :quit
-          @runable = false
-        end
-      end
+      display_greeting(output)
+      main_loop(input, output)
       true
     end
 
-    private def greetings(output : IO) : Nil
-      output.puts "Welcome to Hisho!".colorize(:green)
-      output.puts "I'm here to assist you with your tasks and answer your questions.".colorize(:green)
-      output.puts "Feel free to start chatting or use one of the available commands.".colorize(:green)
-      output.puts "Type '/help' or '/h' to see the list of commands.".colorize(:green)
-      output.puts
+    private def display_greeting(output : IO)
+      [
+        "Welcome to Hisho!",
+        "I'm here to assist you with your tasks and answer your questions.",
+        "Feel free to start chatting or use one of the available commands.",
+        "Type '/help' or '/h' to see the list of commands.",
+        ""
+      ].each { |line| output.puts line.colorize(:green) }
+    end
+
+    private def main_loop(input : IO, output : IO)
+      while @running
+        output.print "Hisho> "
+        break unless handle_input(input.gets)
+      end
+    end
+
+    private def handle_input(input : String?) : Bool
+      return false if input.nil?
+
+      command = CommandBuilder.build(input.strip)
+      result = command.execute(@conversation, @chat_client, @file)
+      result.display
+      @running = false if result.type == :quit
+      true
     end
   end
 

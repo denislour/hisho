@@ -1,4 +1,5 @@
 require "spec"
+require "file_utils"
 require "../src/hisho"
 require "./mock_chat_client"
 
@@ -52,7 +53,7 @@ describe Hisho::Command do
     command = Hisho::CommandBuilder.build("/clear")
     result = command.execute(conversation, chat_client, file)
     result.type.should eq(:info)
-    result.message.should contain("Chat context and added files have been cleared.")
+    result.message.should contain("Cleared conversation and file context.")
   end
 
   it "should return info result when given show_context command" do
@@ -64,6 +65,17 @@ describe Hisho::Command do
     result.message.should contain("Current conversation context:")
     result.message.should contain("User: Test message")
     result.message.should contain("AI: Test response")
+  end
+
+  it "should add file to context when given add command" do
+    file_content = "Test file content"
+    File.write("test_file.txt", file_content)
+    command = Hisho::CommandBuilder.build("/add test_file.txt")
+    result = command.execute(conversation, chat_client, file)
+    result.type.should eq(:info)
+    result.message.should contain("Added files: test_file.txt")
+    file.get("test_file.txt").should eq(file_content)
+    File.delete("test_file.txt")
   end
 end
 
@@ -94,7 +106,7 @@ end
 describe Hisho::File do
   it "should add file to context" do
     file = Hisho::File.new
-    file.add("test.txt", "Test content")
+    file.add_file("test.txt", "Test content")
 
     added_files = file.get_added_files
     added_files["test.txt"].should eq("Test content")
@@ -102,11 +114,26 @@ describe Hisho::File do
 
   it "should clear added files" do
     file = Hisho::File.new
-    file.add("test.txt", "Test content")
+    file.add_file("test.txt", "Test content")
 
     file.clear
 
     added_files = file.get_added_files
     added_files.should be_empty
+  end
+
+  it "should add directory to context" do
+    file = Hisho::File.new
+    Dir.mkdir_p("test_dir/subdir")
+    File.write("test_dir/file1.txt", "Content 1")
+    File.write("test_dir/subdir/file2.txt", "Content 2")
+
+    file.add_path("test_dir")
+
+    added_files = file.get_added_files
+    added_files["test_dir/file1.txt"].should eq("Content 1")
+    added_files["test_dir/subdir/file2.txt"].should eq("Content 2")
+
+    FileUtils.rm_rf("test_dir")
   end
 end

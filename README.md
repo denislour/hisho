@@ -71,11 +71,11 @@ Hisho has been restructured to improve maintainability and extensibility. The ne
 
 We're constantly working to improve Hisho. Here's our current TODO list:
 
-- [ ] Add a File Manager to handle file operations and introduce File classes for storing related data
-- [ ] Update Conversation to use an array of File objects instead of strings for added files
+- [x] Add a File Manager to handle file operations and introduce File classes for storing related data
+- [x] Update Conversation to use an array of File objects instead of strings for added files
+- [x] Add return types to functions where they're missing
+- [x] Organize command files into a dedicated directory
 - [ ] Expand unit tests in spec for all core functions
-- [ ] Add return types to functions where they're missing
-- [ ] Organize command files into a dedicated directory
 - [ ] Store prompts as constants
 - [ ] Prevent CLI termination with Ctrl+C
 - [ ] Implement an automatic way to handle /help instead of hardcoding content

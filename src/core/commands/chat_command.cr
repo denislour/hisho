@@ -6,19 +6,14 @@ module Hisho
 
     def execute(conversation : Conversation, chat_client : ChatClient, file : File) : Command
       conversation.add_user_message(@input)
-      response = chat_client.send_message_to_ai(@input)
-      if response
-        conversation.add_ai_response(response)
-        @message = response
-      else
-        @type = :error
-        @message = "Failed to get response from AI."
-      end
+      @message = chat_client.send_message_to_ai(@input) || "Failed to get response from AI."
+      @type = @message.starts_with?("Failed") ? :error : :chat
+      conversation.add_ai_response(@message) if @type == :chat
       self
     end
 
     def display
-      puts "Hisho: #{@message}".colorize(:blue)
+      puts "Hisho: #{@message}".colorize(@type == :error ? :red : :blue)
     end
   end
 end

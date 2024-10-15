@@ -1,17 +1,31 @@
 module Hisho
   class File
+    private SKIP_PATTERNS = ["__pycache__", ".git", "node_modules"]
+
     def initialize
       @added_files = {} of String => String
     end
 
-    def add(path : String, content : String)
+    def add_file(path : String, content : String)
       @added_files[path] = content
+    end
+
+    def add_path(path : String) : Symbol
+      if ::File.file?(path)
+        add_file(path, ::File.read(path))
+        :info
+      elsif Dir.exists?(path)
+        add_directory(path)
+        :info
+      else
+        :error
+      end
     end
 
     def add_directory(dir_path : String)
       Dir.glob("#{dir_path}/**/*").each do |file_path|
         next if should_skip?(file_path)
-        add(file_path, ::File.read(file_path))
+        add_file(file_path, ::File.read(file_path))
       end
     end
 
@@ -36,10 +50,8 @@ module Hisho
     end
 
     private def should_skip?(file_path : String) : Bool
-      ::File.directory?(file_path) ||
-      file_path.includes?("__pycache__") ||
-      file_path.includes?(".git") ||
-      file_path.includes?("node_modules")
+      ::File.directory?(file_path) || SKIP_PATTERNS.any? { |pattern| file_path.includes?(pattern) }
     end
+
   end
 end
